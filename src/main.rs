@@ -22,8 +22,16 @@ fn main() {
     let input_file_name = &args[1];
     let output_width = args[2].parse::<u32>().unwrap();
     let output_height = args[3].parse::<u32>().unwrap();
-
-    let input_image = image::open(&Path::new(input_file_name)).unwrap();
+    let file_path = Path::new(input_file_name);
+    let input_image = {
+        match image::open(&file_path) {
+            Ok(input_image) => input_image,
+            Err(image_error) => {
+                println!("{}", image_error);
+                std::process::exit(0);
+            }
+        }    
+    };
 
     let (input_width, input_height) = input_image.dimensions();
     if input_width < output_width || input_height < output_height {
@@ -51,8 +59,9 @@ fn main() {
             }
 
             let tile_index = j * columns + i;
-            let output_name = format!("tile-{}.png", tile_index);
-            let ref mut output_file = File::create(&Path::new(&output_name)).unwrap();
+            let output_stem  = file_path.file_stem().unwrap_or(&std::ffi::OsStr::new("tile")).to_str().unwrap();
+            let output_name = format!("{}_{:04}.png", output_stem, tile_index);
+            let output_file = &mut File::create(&Path::new(&output_name)).unwrap();
             let _ = image::ImageRgba8(output_buffer).save(output_file, image::PNG);
         }
     }

@@ -1,6 +1,6 @@
 [package]
 name = "image-splitter"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["David Curthoys <david.curthoys@googlemail.com>"]
 
 [dependencies]
