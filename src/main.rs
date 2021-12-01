@@ -11,6 +11,7 @@ fn print_info() {
     println!();
     println!("For example: To split a 100 x 100 source image named \"cats.png\" into 25 20x20 png files, use the command");
     println!("\timage-splitter cats.png 20 20");
+    println!("output ordered row major");
 }
 
 fn main() {
@@ -45,8 +46,9 @@ fn main() {
     let rows = input_height / output_height;
 
 
-    for i in 0 .. columns {
-        for j in 0 .. rows {
+    for j in 0 .. rows {
+
+        for i in 0 .. columns {
             let src_x = i * output_width;
             let src_y = j * output_height;
 
@@ -58,7 +60,8 @@ fn main() {
                 }
             }
 
-            let tile_index = j * columns + i;
+            let tile_y = rows - j - 1;
+            let tile_index = tile_y * columns + i;
             let output_stem  = file_path.file_stem().unwrap_or(&std::ffi::OsStr::new("tile")).to_str().unwrap();
             let output_name = format!("{}_{:04}.png", output_stem, tile_index);
             let output_file = &mut File::create(&Path::new(&output_name)).unwrap();
